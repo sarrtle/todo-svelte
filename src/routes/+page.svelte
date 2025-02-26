@@ -8,6 +8,31 @@
 		timestamp: number;
 	};
 
+	// types for date greetings
+	type date_greeting_type = {
+		month: string;
+		day: string;
+		greeting: string;
+		daytime: string;
+	};
+
+	// get the current date
+	let date: string = new Date().toLocaleString('en-US', {
+		month: 'short',
+		day: 'numeric'
+	});
+	let date_greeting: date_greeting_type = {
+		month: date.split(' ')[0],
+		day: date.split(' ')[1],
+		greeting:
+			new Date().getHours() > 12
+				? 'Good morning.'
+				: new Date().getHours() > 18
+					? 'Good afternoon.'
+					: 'Good evening.',
+		daytime: new Date().getHours() < 18 ? 'today' : 'evening'
+	};
+
 	// todo task name
 	let task_value = $state<string>('');
 
@@ -55,12 +80,14 @@
 		<!-- Greetings with exact date -->
 		<div class="flex gap-4">
 			<div class="flex flex-col items-center justify-center text-xl font-bold">
-				<div>Feb</div>
-				<div>25</div>
+				<div>{date_greeting.month}</div>
+				<div>{date_greeting.day}</div>
 			</div>
 			<div class="flex flex-col gap-2">
-				<div class="text-3xl font-semibold">Good evening.</div>
-				<div class="text-2xl font-semibold text-slate-300/60">What is your plan for today?</div>
+				<div class="text-3xl font-semibold">{date_greeting.greeting}</div>
+				<div class="text-2xl font-semibold text-slate-300/60">
+					What is your plan for {date_greeting.daytime}?
+				</div>
 			</div>
 		</div>
 
