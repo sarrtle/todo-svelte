@@ -1,5 +1,48 @@
 <!-- main page for this app -->
 <script lang="ts">
+	// types for tasks
+	type task = {
+		task: string;
+		category: string;
+		datetime: string;
+		timestamp: number;
+	};
+
+	// todo task name
+	let task_value = $state<string>('');
+
+	// todo task value
+	let category_value = $state<string>('work');
+
+	// todo task list
+	let task_list = $state<task[]>([]);
+
+	// when add todo
+	function add_todo(_: SubmitEvent) {
+		console.log(task_value, category_value);
+
+		// get today date in this format: February 25, 2025 08:30 PM
+		let date_object = new Date();
+		let today: string = date_object.toLocaleString('en-US', {
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric',
+			hour: 'numeric',
+			minute: 'numeric',
+			hour12: true
+		});
+
+		// create timestamp as number for the id
+		let timestamp = date_object.getTime();
+
+		task_list.push({
+			task: task_value,
+			category: category_value,
+			datetime: today,
+			timestamp: timestamp
+		});
+		console.log(task_list);
+	}
 </script>
 
 <!-- Main container -->
@@ -20,29 +63,36 @@
 	<div class="flex flex-col gap-3 p-4">
 		<!-- Add todo input -->
 		<div class="flex gap-2">
-			<input
-				type="text"
-				name="add"
-				id="add"
-				placeholder="Add todo"
-				class="w-full rounded-lg bg-zinc-700 p-4 focus:outline-none"
-			/>
-			<select name="category" id="category" class="rounded-lg bg-zinc-700 p-4 focus:outline-none">
+			<form onsubmit={add_todo} class="w-full">
+				<input
+					type="text"
+					name="add"
+					id="add"
+					placeholder="Add todo"
+					class="w-full rounded-lg bg-zinc-700 p-4 focus:outline-none"
+					bind:value={task_value}
+				/>
+			</form>
+			<select
+				bind:value={category_value}
+				name="category"
+				id="category"
+				class="rounded-lg bg-zinc-700 p-4 focus:outline-none"
+			>
 				<option value="work">Work</option>
 				<option value="life">Life</option>
 				<option value="game">Game</option>
 			</select>
 		</div>
-		{@render task('Do something better', 'Life', 'February 25, 2025 08:30 PM')}
-		<!-- Create a list of task and respect of the category -->
-		{@render task('Create a simple todo app', 'Work', 'February 25, 2025 10:30 AM')}
-		{@render task('Write report', 'Work', 'February 25, 2025 11:30 AM')}
-		{@render task('Get daily rewards', 'Game', 'February 25, 2025 12:30 PM')}
+		<!-- {@render task_snippet('Do something better', 'Life', 'February 25, 2025 08:30 PM')} -->
+		{#each task_list as task_data (task_data.timestamp)}
+			{@render task_snippet(task_data.task, task_data.category, task_data.datetime)}
+		{/each}
 	</div>
 </div>
 
 <!-- Reusable snippets -->
-{#snippet task(task: string, category: string, datetime: string)}
+{#snippet task_snippet(task: string, category: string, datetime: string)}
 	<div class="flex items-center justify-between gap-4 rounded-lg bg-zinc-700 p-4">
 		<div class="flex items-center gap-4">
 			<div>
